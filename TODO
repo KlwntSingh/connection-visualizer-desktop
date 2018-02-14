@@ -1,0 +1,17 @@
+0. removing network interface card selection
+1. designing grid for ui
+3. major code refactoring in terms of variables
+4. storing domain name for fetched ip's and using it as cache
+5. getting domain name from dns reply packets and using it as cache
+6. storing cache permanently
+7. splitting gui file and making it ui independent, i.e cmd interface should be just matter of using one for file with cmd ui
+9. cmd interface
+10. new functionality of blocking particular communication
+
+Future Requirements
+1. latest on top, some key to sort at ui
+2. making application os independent
+3. to run application without gui
+
+FAILED Implementations
+1. also need to check if user is not root, than run program accordingly
