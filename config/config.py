@@ -12,9 +12,3 @@ CONFIG["AUTHOR"] = """
                     """
 
 CONFIG["os"] = platform.system()
-CONFIG["IP_API"] = "http://localhost:3000/"
-
-print(Path.home())
-
-import socket
-print(socket.getfqdn())
