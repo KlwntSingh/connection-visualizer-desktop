@@ -168,7 +168,7 @@ def render_content(root):
 
     rootFrame.pack()
     scrollbar_interface()
-    
+
     root.resizable(0, 0)
     root.mainloop()
 
@@ -213,7 +213,6 @@ def response_object_reader():
     global data_frame
 
     row_index = 0
-
 
     for widget in data_frame.winfo_children():
         widget.destroy()
