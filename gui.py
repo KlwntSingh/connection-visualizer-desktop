@@ -28,8 +28,7 @@ stop_button = None
 start_button = None
 content_holder_data_frame = None
 data_frame = None
-
-executors = concurrent.futures.ProcessPoolExecutor()
+executors = None
 
 def sniffer_callback(data):
     global expiring_map_object
@@ -38,17 +37,15 @@ def sniffer_callback(data):
     global ignored_ip_set_object
     global snifferThreadId
     global executors
-    # if not ipInfoService:
-
-    data["executors"] = executors
-
-    if not ipInfoService:
-        ipInfoService = IPInfo(**data)
 
     snifferThreadId = data.get("threadId")
     expiring_map_object = data.get("expiring_map", None)
     ignored_ip_set_object = data.get("ignored_ip_set", None)
 
+    executors = concurrent.futures.ProcessPoolExecutor(max_workers = 5)
+    data["executors"] = executors
+
+    ipInfoService = IPInfo(**data)
 
     should_listen_on_expiring_map_object = True
     response_object_reader()
@@ -58,13 +55,10 @@ def get_list_interfaces():
 
 def app_close_callback():
     global root
-    global executors
 
     stop_sniffer_thread()
 
     root.destroy()
-
-    executors.shutdown(wait=True)
 
 def start_sniffer_thread(val):
     global start_button, stop_button
@@ -83,8 +77,12 @@ def stop_sniffer_thread():
     global should_listen_on_expiring_map_object
     global start_button, stop_button
 
-    services["stopSnifferThread"](snifferThreadId)
+    if snifferThreadId:
+        services["stopSnifferThread"](snifferThreadId)
     should_listen_on_expiring_map_object = False
+
+    if executors:
+        executors.shutdown(wait=True)
 
     # start_button.config(state='normal')
     # stop_button.config(state='disabled')
@@ -201,10 +199,9 @@ executor = concurrent.futures.ProcessPoolExecutor()
 def populate_other_fields(packet_bean: Packet):
     if not packet_bean.request_fired:
         packet_bean.request_fired = True
-        def cb(fut):
-            if fut:
-                obj = fut.result().json()
-                packet_bean.domain_name = obj["query"]
+        def cb(obj):
+            if obj:
+                packet_bean.domain_name = obj["country"]
         ipInfoService.getDomainNamesForIP(packet_bean.communicatingIP, cb)
 
 def response_object_reader():
@@ -215,6 +212,7 @@ def response_object_reader():
     global data_frame
 
     row_index = 0
+
 
     for widget in data_frame.winfo_children():
         widget.destroy()
