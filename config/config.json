@@ -5,5 +5,6 @@
     "WINDOWS_LOGS_PATH" : "",
     "LOGS_FILE_NAME" : "file.log",
     "LOGGING_LEVEL" : "INFO",
-    "IP_API" : "http://ip-api.com/json/"
+    "CACHING-FILE" : "",
+    "IP_API" : "https://ip-geo.geekasservice.com/info/"
 }
