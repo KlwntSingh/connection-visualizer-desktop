@@ -168,7 +168,8 @@ def render_content(root):
 
     rootFrame.pack()
     scrollbar_interface()
-
+    
+    root.resizable(0, 0)
     root.mainloop()
 
 def scrollbar_interface():
