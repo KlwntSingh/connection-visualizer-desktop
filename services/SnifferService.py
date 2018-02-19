@@ -31,6 +31,7 @@ class Sniffer():
         self.ignored_ip_set = shared_data.get("ignored_ip_set")
         self.system_interface_obj = InterfaceService.get_all_interfaces()
         self.ip_exists_map = {}
+        self.ip_to_domain_map = {}
 
     def start_sniffing(self, event):
         """
@@ -202,9 +203,9 @@ class Sniffer():
                                 # 2 fields in question area which makes it 4 bytes
                                 question_ares = data[12: 12 + question_bytes_length]
                                 question_data = question_ares[1:-5]
-                                print(len(question_data))
+
                                 domain_name = unpack("!{count}s".format(count=len(question_data)), question_data)
-                                print(domain_name)
+
                                 question_type = unpack("!H", question_ares[-4:-2])
                                 if question_type[0] == 1:
 
@@ -214,11 +215,16 @@ class Sniffer():
                                     # each of anwer are is of 16 bytes
                                     for i in range(answers):
                                         dns_rep = answers_area[12 + i * 16: (i + 1) * 16]
-                                        print(socket.inet_ntoa(unpack("!4s", dns_rep)[0]))
+                                        found_ip_addr = socket.inet_ntoa(unpack("!4s", dns_rep)[0])
+                                        if found_ip_addr not in self.ip_to_domain_map:
+                                            self.ip_to_domain_map[found_ip_addr] = domain_name
 
                     # some other IP packet like IGMP
                     else:
                         logger.debug ('Protocol other than TCP/UDP/ICMP')
+
+                    if packet_bean.communicatingIP in self.ip_to_domain_map:
+                        packet_bean.domain_name = self.ip_to_domain_map[packet_bean.communicatingIP]
 
                     self.shared_data.put(packet_bean.communicatingIP, packet_bean)
 
