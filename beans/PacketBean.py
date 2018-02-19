@@ -7,6 +7,9 @@ class Packet():
         self.trafficDirection = trafficDirection
         self.systemMacAddress = systemMacAddress
         self.communicatingMacAddress = communicatingMacAddress
-        self.domain_name = ''
+        self.domain_name = '-'
+        self.country = ''
+        self.state = ''
+        self.region = ''
         self.request_fired = False
         self.interface = ''
