@@ -29,8 +29,7 @@ class Sniffer():
 
         self.shared_data = shared_data.get("expiring_map")
         self.ignored_ip_set = shared_data.get("ignored_ip_set")
-        self.system_ip_address = InterfaceService.get_interface_info(interface_name)["system_ip_address"]
-        self.system_mac_address = InterfaceService.get_interface_info(interface_name)["system_mac_address"]
+        self.system_interface_obj = InterfaceService.get_all_interfaces()
         self.ip_exists_map = {}
 
     def start_sniffing(self, event):
@@ -50,8 +49,11 @@ class Sniffer():
         while True and not bool.isSet():
             packet = s.recvfrom(65565)
             packet_bean = Packet()
-            packet_bean.systemMacAddress = self.system_mac_address
-            packet_bean.systemIP = self.system_ip_address
+
+            packet_bean.interface = packet[1][0]
+
+            packet_bean.systemMacAddress = self.system_interface_obj[packet_bean.interface]["system_mac_address"]
+            packet_bean.systemIP = self.system_interface_obj[packet_bean.interface]["system_ip_address"]
 
             # packet string from tuple
             packet = packet[0]
@@ -72,10 +74,8 @@ class Sniffer():
             else:
                 packet_bean.communicatingMacAddress = source_mac_address
 
-
             logger.debug('Destination MAC : ' + destination_mac_address + ' Source MAC : ' +
                     source_mac_address + ' Protocol : ' + str(eth_protocol))
-
 
             # Parse IP packets, IP Protocol number = 8
             if eth_protocol == 8:
@@ -181,6 +181,40 @@ class Sniffer():
 
                         # get data from the packet
                         data = packet[h_size:]
+
+                        # 1 byte to length of 1 interms of string
+                        # dns response packet analysis
+                        if source_port == 53:
+                            question = unpack('!H', data[4:6])[0]
+                            answers = unpack('!H', data[6:8])[0]
+                            authority_rr, additional_rr = unpack('!HH', data[8:12])
+
+                            if (authority_rr + additional_rr) == 0:
+                                # udp layer has length and other 4 fields and than in dns layer 6 fields which are each of 2 bytes and are useless
+                                data_length = length - 20
+                                # print(len(data[8:]))
+                                # print(unpack("!{}s".format(length-20), data[12:]))
+
+                                answers_bytes_length = answers * 16
+                                question_bytes_length = data_length - answers_bytes_length
+
+                                # 6 fields are extra fields before dns layer queries which makes starting point at 12
+                                # 2 fields in question area which makes it 4 bytes
+                                question_ares = data[12: 12 + question_bytes_length]
+                                question_data = question_ares[1:-5]
+                                print(len(question_data))
+                                domain_name = unpack("!{count}s".format(count=len(question_data)), question_data)
+                                print(domain_name)
+                                question_type = unpack("!H", question_ares[-4:-2])
+                                if question_type[0] == 1:
+
+                                    # 6 extra fields in dns layer + questionbytes length
+                                    answers_area = data[12 + question_bytes_length: ]
+
+                                    # each of anwer are is of 16 bytes
+                                    for i in range(answers):
+                                        dns_rep = answers_area[12 + i * 16: (i + 1) * 16]
+                                        print(socket.inet_ntoa(unpack("!4s", dns_rep)[0]))
 
                     # some other IP packet like IGMP
                     else:
