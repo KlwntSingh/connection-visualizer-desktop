@@ -42,7 +42,7 @@ def sniffer_callback(data):
     expiring_map_object = data.get("expiring_map", None)
     ignored_ip_set_object = data.get("ignored_ip_set", None)
 
-    executors = concurrent.futures.ProcessPoolExecutor(max_workers = 5)
+    executors = concurrent.futures.ProcessPoolExecutor()
     data["executors"] = executors
 
     ipInfoService = IPInfo(**data)
@@ -238,7 +238,7 @@ def response_object_reader():
                         cell = tk.Label(temp_frame, text=packet_bean.systemMacAddress)
                         cell.grid(row=row_index, column=2, sticky='W')
 
-                        cell = tk.Label(temp_frame, text=packet_bean.communicatingMacAddress)
+                        cell = tk.Label(temp_frame, text=packet_bean.interface)
                         cell.grid(row=row_index, column=3, sticky='W')
 
                         cell = tk.Label(temp_frame, text=packet_bean.domain_name)

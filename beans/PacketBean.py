@@ -9,3 +9,4 @@ class Packet():
         self.communicatingMacAddress = communicatingMacAddress
         self.domain_name = ''
         self.request_fired = False
+        self.interface = ''
