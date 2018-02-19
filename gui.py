@@ -141,7 +141,7 @@ def render_content(root):
     global maxwidth
 
     maxheight = root.winfo_screenheight()
-    maxwidth = root.winfo_screenwidth()
+    maxwidth = root.winfo_screenwidth() + 500
 
     rootFrame = tk.Frame(root, height=maxheight/4, width=maxwidth/2)
 
@@ -181,7 +181,38 @@ def scrollbar_interface():
         nonlocal canvas_around_data_frame
         canvas_around_data_frame.configure(scrollregion=canvas_around_data_frame.bbox("all"))
 
+    content_header_frame = tk.Frame(content_holder_data_frame, width=maxwidth/2)
+    content_header_frame.grid(row=0, column=0)
+
+    each_column_width = maxwidth/2/7
+    content_header_frame.grid_columnconfigure(0, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(1, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(2, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(3, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(4, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(5, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(6, minsize=each_column_width)
+
+    cell = tk.Label(content_header_frame, text="Server IP Address")
+    cell.grid(row=0, column=0)
+    cell = tk.Label(content_header_frame, text="Protocol")
+    cell.grid(row=0, column=1)
+    cell = tk.Label(content_header_frame, text="Interface")
+    cell.grid(row=0, column=2)
+    cell = tk.Label(content_header_frame, text="Country")
+    cell.grid(row=0, column=3)
+    cell = tk.Label(content_header_frame, text="State")
+    cell.grid(row=0, column=4)
+    cell = tk.Label(content_header_frame, text="Region")
+    cell.grid(row=0, column=5)
+    cell = tk.Label(content_header_frame, text="Domain Name")
+    cell.grid(row=0, column=6)
+
+    content_header_frame.pack()
+
     scroll_and_data_frame = tk.Frame(content_holder_data_frame, width=maxwidth/2)
+    scroll_and_data_frame.grid(row=1, column=0)
+
     canvas_around_data_frame = tk.Canvas(scroll_and_data_frame, width=maxwidth/2)
 
     data_frame = tk.Frame(canvas_around_data_frame)
@@ -198,12 +229,20 @@ def scrollbar_interface():
 executor = concurrent.futures.ProcessPoolExecutor()
 
 def populate_other_fields(packet_bean: Packet):
+
     if not packet_bean.request_fired:
         packet_bean.request_fired = True
         def cb(obj):
             if obj:
-                packet_bean.domain_name = obj["country"]
-        ipInfoService.getDomainNamesForIP(packet_bean.communicatingIP, cb)
+                packet_bean.country = obj["country"]
+                packet_bean.state = obj["state"]
+                packet_bean.region = obj["region"]
+
+        packet_bean.country = "fetching....."
+        packet_bean.state = "fetching....."
+        packet_bean.region = "fetching....."
+
+        return ipInfoService.getDomainNamesForIP(packet_bean.communicatingIP, cb)
 
 def response_object_reader():
     global root
@@ -211,6 +250,7 @@ def response_object_reader():
     global ignored_ip_set_object
     global should_listen_on_expiring_map_object
     global data_frame
+    global maxwidth
 
     row_index = 0
 
@@ -218,6 +258,15 @@ def response_object_reader():
         widget.destroy()
 
     temp_frame = tk.Frame(data_frame)
+
+    each_column_width = maxwidth / 2 / 7
+    temp_frame.grid_columnconfigure(0, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(1, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(2, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(3, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(4, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(5, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(6, minsize=each_column_width)
 
     if expiring_map_object:
         for key in list(expiring_map_object.dictionary.keys()):
@@ -229,21 +278,26 @@ def response_object_reader():
                     if packet_bean:
                         populate_other_fields(packet_bean)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.systemIP)
-                        cell.grid(row=row_index, column=0, sticky='W')
-
                         cell = tk.Label(temp_frame, text=packet_bean.communicatingIP)
-                        cell.grid(row=row_index, column=1, sticky='W')
+                        cell.grid(row=row_index, column=0)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.systemMacAddress)
-                        cell.grid(row=row_index, column=2, sticky='W')
+                        cell = tk.Label(temp_frame, text="protocol")
+                        cell.grid(row=row_index, column=1)
 
                         cell = tk.Label(temp_frame, text=packet_bean.interface)
-                        cell.grid(row=row_index, column=3, sticky='W')
+                        cell.grid(row=row_index, column=2)
+
+                        cell = tk.Label(temp_frame, text=packet_bean.country)
+                        cell.grid(row=row_index, column=3)
+
+                        cell = tk.Label(temp_frame, text=packet_bean.state)
+                        cell.grid(row=row_index, column=4)
+
+                        cell = tk.Label(temp_frame, text=packet_bean.region)
+                        cell.grid(row=row_index, column=5)
 
                         cell = tk.Label(temp_frame, text=packet_bean.domain_name)
-                        cell.grid(row=row_index, column=4, sticky='W')
-
+                        cell.grid(row=row_index, column=6)
 
                 printOutPacketData(packet_bean)
                 row_index+=1
