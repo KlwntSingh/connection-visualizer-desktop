@@ -141,7 +141,7 @@ def render_content(root):
     global maxwidth
 
     maxheight = root.winfo_screenheight()
-    maxwidth = root.winfo_screenwidth() + 500
+    maxwidth = root.winfo_screenwidth() + 700
 
     rootFrame = tk.Frame(root, height=maxheight/4, width=maxwidth/2)
 
@@ -152,7 +152,7 @@ def render_content(root):
     dropDownVal.set("")
 
     dropDown = tk.OptionMenu(top_bar_frame, dropDownVal, *get_list_interfaces())
-    dropDown.pack()
+    #dropDown.pack()
 
     start_button = tk.Button(top_bar_frame, text="start", command=lambda: start_sniffer_thread(dropDownVal.get()))
     stop_button = tk.Button(top_bar_frame, text="stop", command=lambda: stop_sniffer_thread())
@@ -184,14 +184,15 @@ def scrollbar_interface():
     content_header_frame = tk.Frame(content_holder_data_frame, width=maxwidth/2)
     content_header_frame.grid(row=0, column=0)
 
-    each_column_width = maxwidth/2/7
+    each_column_width = maxwidth/2/8
     content_header_frame.grid_columnconfigure(0, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(1, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(2, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(3, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(4, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(5, minsize=each_column_width)
-    content_header_frame.grid_columnconfigure(6, minsize=each_column_width)
+    content_header_frame.grid_columnconfigure(6, minsize=(each_column_width + 30))
+    content_header_frame.grid_columnconfigure(7, minsize=(each_column_width))
 
     cell = tk.Label(content_header_frame, text="Server IP Address", font="Helvetica 10 bold")
     cell.grid(row=0, column=0)
@@ -207,6 +208,8 @@ def scrollbar_interface():
     cell.grid(row=0, column=5)
     cell = tk.Label(content_header_frame, text="Domain Name", font="Helvetica 10 bold")
     cell.grid(row=0, column=6)
+    cell = tk.Label(content_header_frame, text=" ", font="Helvetica 10 bold")
+    cell.grid(row=0, column=7)
 
     content_header_frame.pack()
 
@@ -259,14 +262,14 @@ def response_object_reader():
 
     temp_frame = tk.Frame(data_frame)
 
-    each_column_width = maxwidth / 2 / 7
+    each_column_width = maxwidth / 2 / 8
     temp_frame.grid_columnconfigure(0, minsize=each_column_width)
     temp_frame.grid_columnconfigure(1, minsize=each_column_width)
     temp_frame.grid_columnconfigure(2, minsize=each_column_width)
     temp_frame.grid_columnconfigure(3, minsize=each_column_width)
     temp_frame.grid_columnconfigure(4, minsize=each_column_width)
     temp_frame.grid_columnconfigure(5, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(6, minsize=each_column_width)
+    temp_frame.grid_columnconfigure(6, minsize=(each_column_width + 30))
 
     if expiring_map_object:
         for key in list(expiring_map_object.dictionary.keys()):
