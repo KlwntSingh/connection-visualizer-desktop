@@ -1,6 +1,6 @@
 {
     "VERSION": "1.0.0",
-    "APP_NAME" : "sniffer",
+    "APP_NAME" : "Connection Visualizer",
     "LOGS_PATH" : "/var/log/sniffer/",
     "WINDOWS_LOGS_PATH" : "",
     "LOGS_FILE_NAME" : "file.log",

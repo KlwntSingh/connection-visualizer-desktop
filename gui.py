@@ -1,5 +1,4 @@
 import tkinter as tk
-
 from controller import services
 from config.config import CONFIG
 import concurrent.futures
@@ -13,7 +12,13 @@ def showappversion():
 
 def showauthorinfo():
     toplevel = tk.Toplevel()
-    tk.Label(toplevel, text=services["authorinfo"](), height=0, width=50, ).pack()
+    arr = services["authorinfo"]()
+    for line in arr[:-1]:
+        tk.Label(toplevel, text=line, height=0, width=50, ).pack()
+
+    repo = tk.Label(toplevel, text=arr[-1])
+    repo.bind("<Button-1>", lambda x: root.clipboard_append(arr[-1]))
+    repo.pack()
 
 maxwidth = None
 maxheight = None
@@ -306,9 +311,9 @@ def response_object_reader():
 
 
                         popup_menu = tk.Menu(row_frame, tearoff=0)
-                        popup_menu.add_command(label="Copy ",
+                        popup_menu.add_command(label="Copy {ip}".format(ip=packet_bean.communicatingIP),
                                                command=lambda: root.clipboard_append(packet_bean.communicatingIP))
-                        popup_menu.add_command(label="Select All",
+                        popup_menu.add_command(label="Block {ip}".format(ip=packet_bean.communicatingIP),
                                                command=lambda: services["block_ip_address"](packet_bean))
 
                         def callback_for_right_click(x):
