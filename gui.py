@@ -262,15 +262,6 @@ def response_object_reader():
 
     temp_frame = tk.Frame(data_frame)
 
-    each_column_width = maxwidth / 2 / 8
-    temp_frame.grid_columnconfigure(0, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(1, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(2, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(3, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(4, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(5, minsize=each_column_width)
-    temp_frame.grid_columnconfigure(6, minsize=(each_column_width + 30))
-
     if expiring_map_object:
         for key in list(expiring_map_object.dictionary.keys()):
 
@@ -281,31 +272,58 @@ def response_object_reader():
                     if packet_bean:
                         populate_other_fields(packet_bean)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.communicatingIP)
-                        cell.grid(row=row_index, column=0)
+                        row_frame = tk.Frame(temp_frame)
 
-                        cell = tk.Label(temp_frame, text="protocol")
+                        each_column_width = maxwidth / 2 / 8
+                        row_frame.grid_columnconfigure(0, minsize=each_column_width)
+                        row_frame.grid_columnconfigure(1, minsize=each_column_width)
+                        row_frame.grid_columnconfigure(2, minsize=each_column_width)
+                        row_frame.grid_columnconfigure(3, minsize=each_column_width)
+                        row_frame.grid_columnconfigure(4, minsize=each_column_width)
+                        row_frame.grid_columnconfigure(5, minsize=each_column_width)
+                        row_frame.grid_columnconfigure(6, minsize=(each_column_width + 30))
+
+                        ip_column = tk.Label(row_frame, text=packet_bean.communicatingIP)
+                        ip_column.grid(row=row_index, column=0)
+
+                        cell = tk.Label(row_frame, text="protocol")
                         cell.grid(row=row_index, column=1)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.interface)
+                        cell = tk.Label(row_frame, text=packet_bean.interface)
                         cell.grid(row=row_index, column=2)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.country)
+                        cell = tk.Label(row_frame, text=packet_bean.country)
                         cell.grid(row=row_index, column=3)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.state)
+                        cell = tk.Label(row_frame, text=packet_bean.state)
                         cell.grid(row=row_index, column=4)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.region)
+                        cell = tk.Label(row_frame, text=packet_bean.region)
                         cell.grid(row=row_index, column=5)
 
-                        cell = tk.Label(temp_frame, text=packet_bean.domain_name)
+                        cell = tk.Label(row_frame, text=packet_bean.domain_name)
                         cell.grid(row=row_index, column=6)
+
+
+                        popup_menu = tk.Menu(row_frame, tearoff=0)
+                        popup_menu.add_command(label="Copy ",
+                                               command=lambda: root.clipboard_append(packet_bean.communicatingIP))
+                        popup_menu.add_command(label="Select All",
+                                               command=lambda: services["block_ip_address"](packet_bean))
+
+                        def callback_for_right_click(x):
+                            popup_menu.tk_popup(x.x_root, x.y_root)
+
+                        ip_column.bind('<Button-3>', callback_for_right_click)
+                        row_frame.bind('<Button-3>', callback_for_right_click)
+
+                        row_frame.pack()
 
                 printOutPacketData(packet_bean)
                 row_index+=1
 
+    temp_frame.bind('<Button-3>', lambda x: print(x))
     temp_frame.pack()
 
     if should_listen_on_expiring_map_object:
-        root.after(1000, response_object_reader)
+        root.after(2000, response_object_reader)

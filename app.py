@@ -24,7 +24,7 @@ logger.info("Application started")
 
 controller.addService(ControllerServices.createSnifferAndIPRequesterThread, fn_name='startSnifferThread')
 controller.addService(ControllerServices.stopSnifferAndIPRequesterThread, fn_name='stopSnifferThread')
-
+controller.addService(ControllerServices.block_ip_address)
 controller.addService(InterfaceService.get_list_of_interfaces, "list_of_interfaces")
 
 gui.render_content(root)

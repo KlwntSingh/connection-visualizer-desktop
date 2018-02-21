@@ -3,6 +3,10 @@ from core.ThreadFactory import ThreadFactory as tf
 from core.ExpiringDictionary import ExpiringDictionary
 from services.SnifferService import Sniffer
 from services.IPInfoService import IPInfo
+import services.IPTables as iptables
+
+def block_ip_address(packet_bean):
+    return iptables.block_ip_address(packet_bean)
 
 def createSnifferAndIPRequesterThread(selected_interface):
     q = {}
