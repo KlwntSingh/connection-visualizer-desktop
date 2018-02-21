@@ -1,17 +1,15 @@
-0. removing network interface card selection
-1. designing grid for ui
-3. major code refactoring in terms of variables
-4. storing domain name for fetched ip's and using it as cache
-5. getting domain name from dns reply packets and using it as cache
-6. storing cache permanently
-7. splitting gui file and making it ui independent, i.e cmd interface should be just matter of using one for file with cmd ui
-9. cmd interface
-10. new functionality of blocking particular communication
+1. functions documentation
+2. references in readme file
+3. right click menu option bar, destory issue
+4. intial start button hang when lots of ip address communication
 
 Future Requirements
 1. latest on top, some key to sort at ui
 2. making application os independent
 3. to run application without gui
+6. storing cache permanently
+9. cmd interface
+10. splitting gui file and making it ui independent, i.e cmd interface should be just matter of using one for file with cmd ui
 
 FAILED Implementations
 1. also need to check if user is not root, than run program accordingly
