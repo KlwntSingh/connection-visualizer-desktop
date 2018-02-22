@@ -33,6 +33,7 @@ stop_button = None
 start_button = None
 content_holder_data_frame = None
 data_frame = None
+canvas_around_data_frame = None
 executors = None
 
 def sniffer_callback(data):
@@ -71,8 +72,6 @@ def start_sniffer_thread(val):
     q = services["startSnifferThread"](val)
     sniffer_callback(q)
 
-    # start_button.config(state='disabled')
-    # stop_button.config(state='normal')
     start_button.pack_forget()
     stop_button.pack()
 
@@ -181,15 +180,17 @@ def scrollbar_interface():
     global content_holder_data_frame
     global data_frame
     global maxwidth
+    global canvas_around_data_frame
 
     def myfunction(event):
-        nonlocal canvas_around_data_frame
+        global canvas_around_data_frame
         canvas_around_data_frame.configure(scrollregion=canvas_around_data_frame.bbox("all"))
 
     content_header_frame = tk.Frame(content_holder_data_frame, width=maxwidth/2)
     content_header_frame.grid(row=0, column=0)
 
     each_column_width = maxwidth/2/8
+
     content_header_frame.grid_columnconfigure(0, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(1, minsize=each_column_width)
     content_header_frame.grid_columnconfigure(2, minsize=each_column_width)
@@ -236,19 +237,28 @@ def scrollbar_interface():
 
 executor = concurrent.futures.ProcessPoolExecutor()
 
+def name_filter(name):
+    if len(name) > 22:
+        arr = name.split()
+        count = 0
+        for i in range(len(arr)):
+            word = arr[i]
+            count += len(word)
+            if count >= 22:
+                return " ".join(arr[:i]) + "\n" + " ".join(arr[i:])
+    else:
+        return name
+
 def populate_other_fields(packet_bean: Packet):
 
     if not packet_bean.request_fired:
         packet_bean.request_fired = True
         def cb(obj):
             if obj:
-                packet_bean.country = obj["country"]
-                packet_bean.state = obj["state"]
-                packet_bean.region = obj["region"]
-
-        packet_bean.country = "fetching....."
-        packet_bean.state = "fetching....."
-        packet_bean.region = "fetching....."
+                packet_bean.country = obj["country"] if obj['country'] else '-'
+                packet_bean.state = obj["region"] if obj['region']  else '-'
+                packet_bean.region = obj["city"] if obj['city']  else '-'
+                packet_bean.domain_name = name_filter(obj["businessWebsite"] or obj["org"])
 
         return ipInfoService.getDomainNamesForIP(packet_bean.communicatingIP, cb)
 
@@ -259,6 +269,7 @@ def response_object_reader():
     global should_listen_on_expiring_map_object
     global data_frame
     global maxwidth
+    global canvas_around_data_frame
 
     row_index = 0
 
@@ -291,7 +302,7 @@ def response_object_reader():
                         ip_column = tk.Label(row_frame, text=packet_bean.communicatingIP)
                         ip_column.grid(row=row_index, column=0)
 
-                        cell = tk.Label(row_frame, text="protocol")
+                        cell = tk.Label(row_frame, text=packet_bean.protocol)
                         cell.grid(row=row_index, column=1)
 
                         cell = tk.Label(row_frame, text=packet_bean.interface)
@@ -310,14 +321,21 @@ def response_object_reader():
                         cell.grid(row=row_index, column=6)
 
 
-                        popup_menu = tk.Menu(row_frame, tearoff=0)
-                        popup_menu.add_command(label="Copy {ip}".format(ip=packet_bean.communicatingIP),
-                                               command=lambda: root.clipboard_append(packet_bean.communicatingIP))
-                        popup_menu.add_command(label="Block {ip}".format(ip=packet_bean.communicatingIP),
-                                               command=lambda: services["block_ip_address"](packet_bean))
 
                         def callback_for_right_click(x):
+                            global canvas_around_data_frame
+
+                            popup_menu = tk.Menu(canvas_around_data_frame, tearoff=0)
+                            popup_menu.add_command(label="Copy {ip}".format(ip=packet_bean.communicatingIP),
+                                                   command=lambda: root.clipboard_append(packet_bean.communicatingIP))
+                            popup_menu.add_command(label="Block {ip}".format(ip=packet_bean.communicatingIP),
+                                                   command=lambda: services["block_ip_address"](packet_bean))
                             popup_menu.tk_popup(x.x_root, x.y_root)
+
+                            def destory_menu(x):
+                                popup_menu.destroy()
+
+                            popup_menu.bind("<FocusOut>", destory_menu)
 
                         ip_column.bind('<Button-3>', callback_for_right_click)
                         row_frame.bind('<Button-3>', callback_for_right_click)
@@ -327,8 +345,7 @@ def response_object_reader():
                 printOutPacketData(packet_bean)
                 row_index+=1
 
-    temp_frame.bind('<Button-3>', lambda x: print(x))
     temp_frame.pack()
 
     if should_listen_on_expiring_map_object:
-        root.after(2000, response_object_reader)
+        root.after(1000, response_object_reader)
