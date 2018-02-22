@@ -1,9 +1,14 @@
 import time
-class ExpiringDictionary():
 
+KEY_TIMEOUT = 15000
+
+class ExpiringDictionary():
+    """
+    Wrapper over traditional Dictionary which expires and removes key from dictionary after particular period of timeout time
+    """
     current_milli_time = lambda x: int(round(time.time() * 1000))
 
-    def __init__(self, atime=15000):
+    def __init__(self, atime=KEY_TIMEOUT):
         self.dictionary = dict()
         self.atime = atime
 
@@ -14,7 +19,6 @@ class ExpiringDictionary():
         return str(ls)
 
     def get(self, key):
-
         current_milli_time = self.current_milli_time
 
         if key in self.dictionary:
