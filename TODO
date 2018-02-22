@@ -1,15 +1,11 @@
-1. functions documentation
-2. references in readme file
-4. intial start button hang when lots of ip address communication
-5. licence in api
-
 Future Requirements
 1. latest on top, some key to sort at ui
 2. making application os independent
 3. to run application without gui
-6. storing cache permanently
-9. cmd interface
-10. splitting gui file and making it ui independent, i.e cmd interface should be just matter of using one for file with cmd ui
+4. intial start button hang when lots of ip address communication
+5. storing cache permanently
+6. cmd interface
+7. splitting gui file and making it ui independent, i.e cmd interface should be just matter of using one for file with cmd ui
 
 FAILED Implementations
 1. also need to check if user is not root, than run program accordingly
