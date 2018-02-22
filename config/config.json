@@ -6,5 +6,5 @@
     "LOGS_FILE_NAME" : "file.log",
     "LOGGING_LEVEL" : "INFO",
     "CACHING-FILE" : "",
-    "IP_API" : "https://ip-geo.geekasservice.com/info/"
+    "IP_API" : "http://extreme-ip-lookup.com/json/"
 }
