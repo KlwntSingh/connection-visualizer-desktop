@@ -1,10 +1,14 @@
 import tkinter as tk
-from controller import services
+
 from config.config import CONFIG
 import concurrent.futures
+from controller import services
 from services.IPInfoService import IPInfo
 from beans.PacketBean import Packet
 
+"""
+This module for creating Graphical Interface and attaching handler for every events which occurs in ui
+"""
 def showappversion():
     toplevel = tk.Toplevel()
     tk.Label(toplevel, text=services["appversion"](), height=0, width=50).pack()
