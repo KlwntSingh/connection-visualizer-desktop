@@ -1,7 +1,3 @@
-# Packet sniffer in python
-# For Linux - Sniffs all incoming and outgoing packets :)
-# Silver Moon (m00n.silv3r@gmail.com)
-
 import socket, sys
 from struct import *
 
@@ -189,7 +185,7 @@ class Sniffer():
                         # get data from the packet
                         data = packet[h_size:]
 
-                        # 1 byte to length of 1 interms of string
+                        # 1 byte equals length of 1 when stringified string
                         # dns response packet analysis
                         if source_port == 53:
                             question = unpack('!H', data[4:6])[0]

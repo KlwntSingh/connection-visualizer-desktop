@@ -5,6 +5,11 @@ from services.SnifferService import Sniffer
 from services.IPInfoService import IPInfo
 import services.IPTables as iptables
 
+"""
+    This module defines Service called by controller according to event in ui
+
+"""
+
 def block_ip_address(packet_bean):
     return iptables.block_ip_address(packet_bean)
 

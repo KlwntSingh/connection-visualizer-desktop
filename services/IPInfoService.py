@@ -1,13 +1,11 @@
+import re
+import socket
 from config.config import CONFIG
 from core.APIRequest import Request
-import re
 from beans.RequestsException import RequestExceptions
 import AppUtils as au
 from services.LoggerService import logger
 from services.CachingService import CacheService
-import concurrent.futures
-import time
-import socket
 
 request = Request()
 REGEX_PATTERN = 'https?:\/\/(www.)?([a-zA-Z\d\-\.]*\.[a-zA-Z]{2,3})|(localhost)'
