@@ -23,6 +23,12 @@ class Sniffer():
     # specifies the protocol
     communication_protocol = socket.ntohs(0x0003)
 
+    THIRD_LAYER_PROTOCOL_MAP = {
+        6 : 'TCP',
+        1 : 'ICMP',
+        17 : 'UDP'
+    }
+
     def __init__(self, **kargs):
         interface_name = kargs.get("interface_name")
         shared_data = kargs.get("shared_data")
@@ -106,7 +112,7 @@ class Sniffer():
                     else:
                         packet_bean.communicatingIP = source_ip_address
 
-                    packet_bean.protocol = str(protocol)
+                    packet_bean.protocol = Sniffer.THIRD_LAYER_PROTOCOL_MAP[protocol] if protocol in Sniffer.THIRD_LAYER_PROTOCOL_MAP else '-'
 
                     logger.debug ('Version : ' + str(version) + ' IP Header Length : ' + str(ihl) + ' TTL : ' + str(
                         ttl) + ' Protocol : ' + str(protocol) + ' Source Address : ' + str(
@@ -223,8 +229,10 @@ class Sniffer():
                     else:
                         logger.debug ('Protocol other than TCP/UDP/ICMP')
 
-                    if packet_bean.communicatingIP in self.ip_to_domain_map:
-                        packet_bean.domain_name = self.ip_to_domain_map[packet_bean.communicatingIP]
+                    # if packet_bean.communicatingIP in self.ip_to_domain_map:
+                    #     packet_bean.domain_name = self.ip_to_domain_map[packet_bean.communicatingIP]
+                    # else:
+                    #     packet_bean.domain_name = socket.gethostbyaddr(packet_bean.communicatingIP)#input addr, output name
 
                     self.shared_data.put(packet_bean.communicatingIP, packet_bean)
 
