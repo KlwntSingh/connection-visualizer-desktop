@@ -8,8 +8,8 @@ class Packet():
         self.systemMacAddress = systemMacAddress
         self.communicatingMacAddress = communicatingMacAddress
         self.domain_name = '-'
-        self.country = ''
-        self.state = ''
-        self.region = ''
+        self.country = 'fetching.....'
+        self.state = 'fetching.....'
+        self.region = 'fetching.....'
         self.request_fired = False
         self.interface = ''
