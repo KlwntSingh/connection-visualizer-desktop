@@ -2,7 +2,8 @@
 1. Download or clone project
 2. `sudo apt-get install python3-dev libpcap-dev pypcap`
 3. pip install -r requirements.txt
-4. sudo python app.py
+4. sudo su
+5. python app.py
 
 ## Dependencies:
     1. python3-dev  
