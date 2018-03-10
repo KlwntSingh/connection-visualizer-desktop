@@ -23,10 +23,11 @@ def authorinfo():
 
 # This feature is not complete yet
 def restart_with_root():
-    python = sys.executable
-    actFil= sys.argv[0]
-    neargs=python, os.getcwd() + "/" + actFil
-    os.execl("sudo", *neargs)
+    # python = sys.executable
+    # actFil= sys.argv[0]
+    # neargs=python, os.getcwd() + "/" + actFil
+    # os.execl("sudo", *neargs)
+    pass
 
 # This object is like controller
 services = {
